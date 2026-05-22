@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N5 助詞クイズ (With Explanations)</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      max-width: 650px;
+      margin: 40px auto;
+      line-height: 1.8;
+      padding: 0 16px;
+      background: #f0f4f8;
+      color: #102a43;
+    }
+    h1 {
+      color: #334e68;
+      text-align: center;
+      font-size: 28px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #627d98;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .question {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #d9e2ec;
+    }
+    .question p {
+      font-size: 18px;
+      margin-top: 0;
+      color: #243b53;
+    }
+    label {
+      display: block;
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    label:hover {
+      background: #f0f4f8;
+    }
+    input[type="radio"] {
+      margin-right: 10px;
+      transform: scale(1.1);
+    }
+    .result-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    button {
+      background: #334e68;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #102a43;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      background: #bcccdc;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #102a43;
+      display: none;
+    }
+    .feedback-box {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .correct-box {
+      background-color: #e3f9e5;
+      border-left: 5px solid #2e7d32;
+      color: #1b5e20;
+    }
+    .wrong-box {
+      background-color: #ffebee;
+      border-left: 5px solid #c62828;
+      color: #b71c1c;
+    }
+    .exp-title {
+      font-weight: bold;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    .correct-box .exp-title { color: #2e7d32; }
+    .wrong-box .exp-title { color: #c62828; }
+    
+    .exp-text {
+      color: #486581;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📝 N5 Particles Quiz</h1>
+  <div class="subtitle">Test your Japanese particles knowledge!</div>
+  
+  <form id="quizForm"></form>
+  
+  <div class="result-container">
+    <button onclick="checkAnswers(event)">Check Answers (答え合わせ)</button>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "1. わたし ___ 学生です。",
+        options: ["を", "は", "に", "で"],
+        answer: "は",
+        exp: "<b>は (wa): Topic Marker.</b> Used to introduce the main topic of the sentence. 'As for me, I am a student.'"
+      },
+      {
+        question: "2. 毎朝 7時 ___ 起きます。",
+        options: ["に", "を", "と", "の"],
+        answer: "に",
+        exp: "<b>に (ni): Specific Time.</b> Used with specific numbers/points in time (7-ji, getsuyōbi). 'I wake up AT 7 o'clock.'"
+      },
+      {
+        question: "3. 学校 ___ 行きます。",
+        options: ["を", "で", "に", "と"],
+        answer: "に",
+        exp: "<b>に (ni): Destination.</b> Shows the direction or goal of movement verbs like 行きます (go), 来ます (come), 帰ります (return)."
+      },
+      {
+        question: "4. パン ___ 食べます。",
+        options: ["に", "が", "を", "へ"],
+        answer: "を",
+        exp: "<b>を (o): Direct Object.</b> Marks the thing that receives the action. Eating WHAT? Eating bread (パン)."
+      },
+      {
+        question: "5. 友だち ___ 会いました。",
+        options: ["に", "を", "の", "で"],
+        answer: "に",
+        exp: "<b>に (ni): Target of Action.</b> Verbs like 会います (meet) always take 'に' to show the person you interact with."
+      },
+      {
+        question: "6. うち ___ 日本語を勉強しました。",
+        options: ["を", "に", "で", "と"],
+        answer: "で",
+        exp: "<b>で (de): Location of Action.</b> Marks the place where an active verb happens. 'Studied AT home.'"
+      },
+      {
+        question: "7. だれ ___ 来ましたか。",
+        options: ["を", "が", "に", "へ"],
+        answer: "が",
+        exp: "<b>が (ga): Subject with Question Words.</b> When a question word (だれ, なに) is the subject, always use 'が', never 'は'."
+      },
+      {
+        question: "8. 田中さん ___ いっしょに映画を見ます。",
+        options: ["の", "が", "と", "で"],
+        answer: "と",
+        exp: "<b>と (to): Partner / 'With'.</b> Used with 'いっしょに' (together) to show the person you do an activity with."
+      },
+      {
+        question: "9. これは わたし ___ 本です。",
+        options: ["の", "を", "に", "へ"],
+        answer: "の",
+        exp: "<b>の (no): Possession / Connection.</b> Connects two nouns. N1 + の + N2 makes N1 the owner. 'MY book.'"
+      },
+      {
+        question: "10. きょうしつ ___ せんせいが います。",
+        options: ["の", "を", "で", "に"],
+        answer: "in",
+        answer: "に",
+        exp: "<b>に (ni): Existence.</b> Marks the place where someone or something exists/is located with the verbs います or あります."
+      }
+    ];
+
+    const form = document.getElementById("quizForm");
+
+    quizData.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+
+      let html = `<p><strong>${q.question}</strong></p>`;
+      q.options.forEach(option => {
+        html += `
+          <label>
+            <input type="radio" name="q${index}" value="${option}">
+            ${option}
+          </label>
+        `;
+      });
+
+      html += `<div id="feedback${index}"></div>`;
+      div.innerHTML = html;
+      form.appendChild(div);
+    });
+
+    function checkAnswers(event) {
+      event.preventDefault();
+      let score = 0;
+
+      quizData.forEach((q, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const feedback = document.getElementById(`feedback${index}`);
+
+        if (selected) {
+          if (selected.value === q.answer) {
+            score++;
+            feedback.innerHTML = `
+              <div class="feedback-box correct-box">
+                <div class="exp-title">〇 Correct!</div>
+                <div class="exp-text">${q.exp}</div>
+              </div>`;
+          } else {
+            feedback.innerHTML = `
+              <div class="feedback-box wrong-box">
+                <div class="exp-title">✕ Incorrect (Your answer: ${selected.value} / Correct: ${q.answer})</div>
+                <div class="exp-text">${q.exp}</div>
+              </div>`;
+          }
+        } else {
+          feedback.innerHTML = `
+            <div class="feedback-box wrong-box">
+              <div class="exp-title">✕ No Answer (Correct: ${q.answer})</div>
+              <div class="exp-text">${q.exp}</div>
+            </div>`;
+        }
+      });
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.textContent = `Score: ${score} / ${quizData.length}`;
+    }
+  </script>
+</body>
+</html>
